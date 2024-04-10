@@ -1,10 +1,11 @@
 import Contact from "../Contact/Contact";
+import css from "./ContactList.module.css";
 
-const ContactList = () => {
+const ContactList = ({ visible }) => {
   return (
-    <ul>
+    <ul className={css.contacts}>
       <li>
-        <Contact />
+        <Contact baseState={visible} />
       </li>
     </ul>
   );
