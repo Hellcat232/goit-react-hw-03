@@ -1,13 +1,13 @@
 import Contact from "../Contact/Contact";
 import css from "./ContactList.module.css";
 
-const ContactList = ({ visible }) => {
+const ContactList = ({ visible, onDel }) => {
   return (
     <ul className={css.contacts}>
       {visible.map((item) => {
         return (
           <li key={item.id}>
-            <Contact baseState={visible} />
+            <Contact onDelete={onDel} baseState={item} />
           </li>
         );
       })}

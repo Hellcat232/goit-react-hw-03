@@ -1,7 +1,7 @@
 import ContactForm from "../ContactForm/ContactForm";
 import SearchBox from "../SearchBox/SearchBox";
 import ContactList from "../ContactList/ContactList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const base = [
   { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
@@ -11,24 +11,49 @@ const base = [
 ];
 
 const App = () => {
-  const [states, setState] = useState(base);
-  // console.log(setState);
-  const [filter, setFilter] = useState("");
+  const [states, setState] = useState(() => {
+    const saveWithLocalStorage = window.localStorage.getItem("local-save");
+    if (saveWithLocalStorage !== null) {
+      return JSON.parse(saveWithLocalStorage);
+    } else {
+      return base;
+    }
+  });
+  const [filtered, setFiltered] = useState("");
 
-  const visibleContact = states.filter((state) =>
-    state.toString().toLowerCase().includes(filter.toLowerCase())
+  useEffect(() => {
+    window.localStorage.setItem("local-save", JSON.stringify(states));
+  }, [states]);
+
+  const addContact = (add) => {
+    setState((prevState) => [...prevState, add]);
+  };
+
+  const visibleContact = states.filter(
+    (state) =>
+      (state.name &&
+        state.name.toLowerCase().includes(filtered.toLowerCase())) ||
+      (typeof state.number === "string" && state.number.includes(filtered))
   );
-  console.log(visibleContact);
+
+  const deleteContact = (id) => {
+    setState((prevState) => prevState.filter((state) => state.id !== id));
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
 
-      <ContactForm />
+      <ContactForm onAdd={addContact} />
       <SearchBox
-        values={filter}
-        onFilter={(event) => setFilter(event.target.value)}
+        values={filtered}
+        onFilter={(event) => setFiltered(event.target.value)}
       />
-      <ContactList visible={visibleContact} state={states} />
+      <ContactList
+        onDel={deleteContact}
+        visible={visibleContact}
+        state={states}
+      />
     </div>
   );
 };

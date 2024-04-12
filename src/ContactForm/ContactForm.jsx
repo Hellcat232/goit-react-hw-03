@@ -2,23 +2,24 @@ import css from "./ContactForm.module.css";
 import * as Yup from "yup";
 import { useId } from "react";
 import { Form, Formik, Field, ErrorMessage } from "formik";
+import { nanoid } from "nanoid";
 const initialValue = {
-  username: "",
-  usernumber: "",
+  name: "",
+  number: "",
 };
 
 const Validation = Yup.object().shape({
-  username: Yup.string()
+  name: Yup.string()
     .min(3, "Must be min 3 symbols")
     .max(50, "Must be no more then 50 symbols")
     .required("Required field"),
-  usernumber: Yup.string()
+  number: Yup.string()
     .min(2, "Must be min 2 symbols")
     .max(50, "Must be no more then 50 symbols")
     .required("Required field"),
 });
 
-const ContactForm = () => {
+const ContactForm = ({ onAdd }) => {
   const nameId = useId();
   const numberId = useId();
 
@@ -27,7 +28,12 @@ const ContactForm = () => {
       initialValues={initialValue}
       validationSchema={Validation}
       onSubmit={(values, actions) => {
-        console.log(values);
+        const add = {
+          id: nanoid(),
+          ...values,
+        };
+        console.log(add, values);
+        onAdd(add);
         actions.resetForm();
       }}
     >
@@ -36,19 +42,19 @@ const ContactForm = () => {
         <Field
           className={css["contact-inputs"]}
           type="text"
-          name="username"
+          name="name"
           id={nameId}
         />
-        <ErrorMessage name="username" component="span" />
+        <ErrorMessage name="name" component="span" />
 
         <label htmlFor={numberId}>Number</label>
         <Field
           className={css["contact-inputs"]}
           type="phone"
-          name="usernumber"
+          name="number"
           id={numberId}
         />
-        <ErrorMessage name="usernumber" component="span" />
+        <ErrorMessage name="number" component="span" />
 
         <button className={css["add-btn"]} type="submit">
           Add contact
